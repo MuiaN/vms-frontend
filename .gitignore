@@ -1,0 +1,4 @@
+node_modules
+vms-web/node_modules
+lib/api-client-react/node_modules
+lib/api-spec/node_modules

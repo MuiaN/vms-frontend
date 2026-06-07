@@ -1,0 +1,1278 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Vehicle Management System API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication
+  - name: vehicles
+    description: Vehicle management
+  - name: distributors
+    description: Distributor management
+  - name: users
+    description: User management (manufacturer admin)
+  - name: pricing
+    description: Vehicle pricing
+  - name: orders
+    description: Customer orders
+  - name: documents
+    description: Document management
+  - name: invoices
+    description: Billing and invoices
+  - name: subscriptions
+    description: Distributor subscription plans
+  - name: tracking
+    description: Live map tracking
+  - name: news
+    description: Industry news
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /vehicles:
+    get:
+      operationId: listVehicles
+      tags: [vehicles]
+      summary: List all vehicles
+      parameters:
+        - name: distributorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+          description: Filter by distributor ID
+      responses:
+        "200":
+          description: List of vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Vehicle"
+    post:
+      operationId: createVehicle
+      tags: [vehicles]
+      summary: Register a new vehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleInput"
+      responses:
+        "201":
+          description: Vehicle created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+  /vehicles/stats:
+    get:
+      operationId: getVehicleStats
+      tags: [vehicles]
+      summary: Get vehicle statistics summary
+      responses:
+        "200":
+          description: Vehicle stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleStats"
+
+  /vehicles/{id}:
+    get:
+      operationId: getVehicle
+      tags: [vehicles]
+      summary: Get a vehicle by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+        "404":
+          description: Not found
+
+  /vehicles/{id}/status:
+    patch:
+      operationId: updateVehicleStatus
+      tags: [vehicles]
+      summary: Update vehicle build status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleStatusUpdate"
+      responses:
+        "200":
+          description: Updated vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+  /vehicles/{id}/release:
+    patch:
+      operationId: releaseVehicle
+      tags: [vehicles]
+      summary: Release vehicle to distributor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleReleaseInput"
+      responses:
+        "200":
+          description: Updated vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+
+  /vehicles/{id}/history:
+    get:
+      operationId: getVehicleHistory
+      tags: [vehicles]
+      summary: Get status history for a vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Status history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StatusHistory"
+
+  /distributors:
+    get:
+      operationId: listDistributors
+      tags: [distributors]
+      summary: List all distributors
+      responses:
+        "200":
+          description: List of distributors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Distributor"
+    post:
+      operationId: createDistributor
+      tags: [distributors]
+      summary: Create a new distributor (manufacturer only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDistributorInput"
+      responses:
+        "201":
+          description: Distributor created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Distributor"
+        "403":
+          description: Forbidden
+
+  /distributors/{id}:
+    patch:
+      operationId: updateDistributor
+      tags: [distributors]
+      summary: Update a distributor (manufacturer only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDistributorInput"
+      responses:
+        "200":
+          description: Updated distributor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Distributor"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteDistributor
+      tags: [distributors]
+      summary: Delete a distributor (manufacturer only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Forbidden
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (manufacturer only)
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserWithDistributor"
+        "403":
+          description: Forbidden
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create a new user (manufacturer only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithDistributor"
+        "409":
+          description: Email already in use
+
+  /users/{id}:
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update a user (manufacturer only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserInput"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithDistributor"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteUser
+      tags: [users]
+      summary: Delete a user (manufacturer only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Forbidden
+
+  /pricing:
+    get:
+      operationId: listPricing
+      tags: [pricing]
+      summary: List pricing configurations
+      parameters:
+        - name: distributorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of pricing entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehiclePricing"
+    post:
+      operationId: createPricing
+      tags: [pricing]
+      summary: Set pricing for a vehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehiclePricingInput"
+      responses:
+        "201":
+          description: Pricing created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehiclePricing"
+
+  /category-pricing:
+    get:
+      operationId: listCategoryPricing
+      tags: [pricing]
+      summary: List category pricing configurations
+      parameters:
+        - name: distributorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of category pricing entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryPricing"
+    post:
+      operationId: createCategoryPricing
+      tags: [pricing]
+      summary: Set pricing for a vehicle category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryPricingInput"
+      responses:
+        "201":
+          description: Category pricing created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryPricing"
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List orders
+      parameters:
+        - name: distributorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    patch:
+      operationId: updateOrder
+      tags: [orders]
+      summary: Update order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderUpdate"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+    delete:
+      operationId: deleteOrder
+      tags: [orders]
+      summary: Delete an order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /documents:
+    get:
+      operationId: listDocuments
+      tags: [documents]
+      summary: List documents
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+    post:
+      operationId: uploadDocument
+      tags: [documents]
+      summary: Upload a document (simulated)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentInput"
+      responses:
+        "201":
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+
+  /subscriptions:
+    post:
+      operationId: createSubscription
+      tags: [subscriptions]
+      summary: Attach a subscription plan to a distributor (manufacturer only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionInput"
+      responses:
+        "201":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+    get:
+      operationId: listSubscriptions
+      tags: [subscriptions]
+      summary: List subscription plans
+      responses:
+        "200":
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/{id}/cancel:
+    patch:
+      operationId: cancelSubscription
+      tags: [subscriptions]
+      summary: Cancel a subscription (manufacturer only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Subscription not found
+        "409":
+          description: Already cancelled
+
+  /invoices:
+    post:
+      operationId: createInvoice
+      tags: [invoices]
+      summary: Create a new invoice (manufacturer only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvoiceInput"
+      responses:
+        "201":
+          description: Invoice created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+    get:
+      operationId: listInvoices
+      tags: [invoices]
+      summary: List invoices
+      parameters:
+        - name: distributorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invoice"
+
+  /invoices/{id}/pay:
+    post:
+      operationId: payInvoice
+      tags: [invoices]
+      summary: Simulate payment of an invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentInput"
+      responses:
+        "200":
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResult"
+        "404":
+          description: Invoice not found
+        "409":
+          description: Invoice already paid
+
+  /invoices/{id}/download:
+    get:
+      operationId: downloadInvoice
+      tags: [invoices]
+      summary: Download invoice (mock PDF info)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Invoice download info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceDownload"
+
+  /tracking:
+    get:
+      operationId: getTracking
+      tags: [tracking]
+      summary: Get live tracking data
+      parameters:
+        - name: distributorId
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Tracking data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrackingPoint"
+
+  /news:
+    get:
+      operationId: getNews
+      tags: [news]
+      summary: Get industry news
+      responses:
+        "200":
+          description: News items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsItem"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, role]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        role:
+          type: string
+          enum: [manufacturer, distributor]
+        distributorId:
+          type: ["integer", "null"]
+
+    VehicleInput:
+      type: object
+      required: [make, model, colour, engine]
+      properties:
+        vin:
+          type: ["string", "null"]
+        make:
+          type: string
+        model:
+          type: string
+        trim:
+          type: ["string", "null"]
+        colour:
+          type: string
+        engine:
+          type: string
+
+    Vehicle:
+      type: object
+      required: [id, vin, make, model, colour, engine, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        vin:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        trim:
+          type: ["string", "null"]
+        colour:
+          type: string
+        engine:
+          type: string
+        status:
+          type: string
+          enum: [Production, Quality Check, Ready for Dispatch, Dispatched]
+        currentDistributorId:
+          type: ["integer", "null"]
+        distributorName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    VehicleStats:
+      type: object
+      required: [total, byStatus, dispatched, available]
+      properties:
+        total:
+          type: integer
+        byStatus:
+          type: array
+          items:
+            type: object
+            required: [status, count]
+            properties:
+              status:
+                type: string
+              count:
+                type: integer
+        dispatched:
+          type: integer
+        available:
+          type: integer
+
+    VehicleStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [Production, Quality Check, Ready for Dispatch, Dispatched]
+
+    VehicleReleaseInput:
+      type: object
+      required: [distributorId]
+      properties:
+        distributorId:
+          type: integer
+
+    StatusHistory:
+      type: object
+      required: [id, vehicleId, oldStatus, newStatus, changedAt]
+      properties:
+        id:
+          type: integer
+        vehicleId:
+          type: integer
+        oldStatus:
+          type: ["string", "null"]
+        newStatus:
+          type: string
+        changedBy:
+          type: ["integer", "null"]
+        changedAt:
+          type: string
+
+    Distributor:
+      type: object
+      required: [id, name, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        contactInfo:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        vehicleCount:
+          type: ["integer", "null"]
+        userCount:
+          type: ["integer", "null"]
+
+    CreateDistributorInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        contactInfo:
+          type: ["string", "null"]
+
+    UpdateDistributorInput:
+      type: object
+      properties:
+        name:
+          type: ["string", "null"]
+        contactInfo:
+          type: ["string", "null"]
+
+    UserWithDistributor:
+      type: object
+      required: [id, email, role, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        role:
+          type: string
+          enum: [manufacturer, distributor]
+        distributorId:
+          type: ["integer", "null"]
+        distributorName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    CreateUserInput:
+      type: object
+      required: [email, password, role]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [manufacturer, distributor]
+        distributorId:
+          type: ["integer", "null"]
+
+    UpdateUserInput:
+      type: object
+      properties:
+        email:
+          type: ["string", "null"]
+        password:
+          type: ["string", "null"]
+        role:
+          type: ["string", "null"]
+        distributorId:
+          type: ["integer", "null"]
+
+    VehiclePricingInput:
+      type: object
+      required: [vehicleId, distributorId, price]
+      properties:
+        vehicleId:
+          type: integer
+        distributorId:
+          type: integer
+        price:
+          type: number
+        effectiveDate:
+          type: ["string", "null"]
+
+    VehiclePricing:
+      type: object
+      required: [id, vehicleId, distributorId, price]
+      properties:
+        id:
+          type: integer
+        vehicleId:
+          type: integer
+        distributorId:
+          type: integer
+        price:
+          type: number
+        effectiveDate:
+          type: ["string", "null"]
+        vehicleVin:
+          type: ["string", "null"]
+        vehicleMake:
+          type: ["string", "null"]
+        vehicleModel:
+          type: ["string", "null"]
+
+    CategoryPricingInput:
+      type: object
+      required: [distributorId, category, price]
+      properties:
+        distributorId:
+          type: integer
+        category:
+          type: string
+        price:
+          type: number
+
+    CategoryPricing:
+      type: object
+      required: [id, distributorId, category, price, createdAt]
+      properties:
+        id:
+          type: integer
+        distributorId:
+          type: integer
+        category:
+          type: string
+        price:
+          type: number
+        createdAt:
+          type: string
+
+    OrderInput:
+      type: object
+      required: [vehicleId, distributorId, customerName, customerContact]
+      properties:
+        vehicleId:
+          type: integer
+        distributorId:
+          type: integer
+        customerName:
+          type: string
+        customerContact:
+          type: string
+
+    OrderUpdate:
+      type: object
+      properties:
+        orderStatus:
+          type: string
+          enum: [Pending, Confirmed, Delivered]
+
+    Order:
+      type: object
+      required: [id, vehicleId, distributorId, customerName, customerContact, orderStatus, createdAt]
+      properties:
+        id:
+          type: integer
+        vehicleId:
+          type: integer
+        distributorId:
+          type: integer
+        customerName:
+          type: string
+        customerContact:
+          type: string
+        orderStatus:
+          type: string
+          enum: [Pending, Confirmed, Delivered]
+        createdAt:
+          type: string
+        vehicleVin:
+          type: ["string", "null"]
+        vehicleMake:
+          type: ["string", "null"]
+        vehicleModel:
+          type: ["string", "null"]
+
+    DocumentInput:
+      type: object
+      required: [fileName, fileType]
+      properties:
+        fileName:
+          type: string
+        fileType:
+          type: string
+        distributorId:
+          type: ["integer", "null"]
+
+    Document:
+      type: object
+      required: [id, fileName, fileType, uploadDate]
+      properties:
+        id:
+          type: integer
+        uploadedBy:
+          type: ["integer", "null"]
+        distributorId:
+          type: ["integer", "null"]
+        fileName:
+          type: string
+        fileType:
+          type: string
+        filePath:
+          type: string
+        uploadDate:
+          type: string
+
+    CreateSubscriptionInput:
+      type: object
+      required: [distributorId, planName, billingCycle, amount, startDate]
+      properties:
+        distributorId:
+          type: integer
+        planName:
+          type: string
+        billingCycle:
+          type: string
+          enum: [monthly, quarterly, annual]
+        amount:
+          type: number
+        startDate:
+          type: string
+        description:
+          type: ["string", "null"]
+
+    Subscription:
+      type: object
+      required: [id, distributorId, planName, billingCycle, amount, startDate, nextBillingDate, status, createdAt]
+      properties:
+        id:
+          type: integer
+        distributorId:
+          type: integer
+        distributorName:
+          type: ["string", "null"]
+        planName:
+          type: string
+        billingCycle:
+          type: string
+          enum: [monthly, quarterly, annual]
+        amount:
+          type: number
+        startDate:
+          type: string
+        nextBillingDate:
+          type: string
+        status:
+          type: string
+          enum: [active, cancelled, suspended]
+        description:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    Invoice:
+      type: object
+      required: [id, distributorId, amount, dueDate, status]
+      properties:
+        id:
+          type: integer
+        distributorId:
+          type: integer
+        vehicleId:
+          type: ["integer", "null"]
+        amount:
+          type: number
+        dueDate:
+          type: string
+        status:
+          type: string
+          enum: [paid, unpaid]
+        description:
+          type: ["string", "null"]
+        pdfUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: ["string", "null"]
+        distributorName:
+          type: ["string", "null"]
+        vehicleMake:
+          type: ["string", "null"]
+        vehicleModel:
+          type: ["string", "null"]
+        vehicleTrim:
+          type: ["string", "null"]
+        vehicleVin:
+          type: ["string", "null"]
+
+    InvoiceDownload:
+      type: object
+      required: [invoiceId, pdfUrl, fileName]
+      properties:
+        invoiceId:
+          type: integer
+        pdfUrl:
+          type: string
+        fileName:
+          type: string
+
+    TrackingPoint:
+      type: object
+      required: [vehicleId, lat, lng, lastUpdated]
+      properties:
+        vehicleId:
+          type: integer
+        lat:
+          type: number
+        lng:
+          type: number
+        originLat:
+          type: ["number", "null"]
+        originLng:
+          type: ["number", "null"]
+        destLat:
+          type: ["number", "null"]
+        destLng:
+          type: ["number", "null"]
+        heading:
+          type: ["number", "null"]
+        speed:
+          type: ["number", "null"]
+        progress:
+          type: ["number", "null"]
+        status:
+          type: ["string", "null"]
+        lastUpdated:
+          type: string
+        vin:
+          type: ["string", "null"]
+        make:
+          type: ["string", "null"]
+        model:
+          type: ["string", "null"]
+        distributorId:
+          type: ["integer", "null"]
+
+    CreateInvoiceInput:
+      type: object
+      required: [vehicleId, dueDate]
+      properties:
+        vehicleId:
+          type: integer
+        amount:
+          type: ["number", "null"]
+        dueDate:
+          type: string
+        description:
+          type: ["string", "null"]
+
+    PaymentInput:
+      type: object
+      required: [cardHolder, cardNumber, expiryMonth, expiryYear, cvv]
+      properties:
+        cardHolder:
+          type: string
+        cardNumber:
+          type: string
+        expiryMonth:
+          type: string
+        expiryYear:
+          type: string
+        cvv:
+          type: string
+
+    PaymentResult:
+      type: object
+      required: [receiptNumber, invoiceId, amount, paidAt, cardLast4, distributorName]
+      properties:
+        receiptNumber:
+          type: string
+        invoiceId:
+          type: integer
+        amount:
+          type: number
+        paidAt:
+          type: string
+        cardLast4:
+          type: string
+        distributorName:
+          type: ["string", "null"]
+
+    NewsItem:
+      type: object
+      required: [title, summary, date, source]
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        date:
+          type: string
+        source:
+          type: string

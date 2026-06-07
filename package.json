@@ -1,0 +1,15 @@
+{
+  "name": "vms-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.26.1",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm --filter @workspace/vms-web run build",
+    "dev": "pnpm --filter @workspace/vms-web run dev",
+    "typecheck": "tsc --build && pnpm --filter @workspace/vms-web run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}
