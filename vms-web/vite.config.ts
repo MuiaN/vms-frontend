@@ -19,6 +19,15 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress Rollup's MODULE_LEVEL_DIRECTIVE warning that fires when
+        // shadcn/ui components still contain a "use client" string literal.
+        // The directive is meaningless in a Vite SPA and is safe to ignore.
+        if (warning.code === "MODULE_LEVEL_DIRECTIVE") return;
+        warn(warning);
+      },
+    },
   },
   server: {
     port: 5173,

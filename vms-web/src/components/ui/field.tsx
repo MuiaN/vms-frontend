@@ -1,13 +1,6 @@
-"use client"
-
-import { useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-
-function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
     <fieldset
       data-slot="field-set"
@@ -20,8 +13,6 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
     />
   )
 }
-
-function FieldLegend({
   className,
   variant = "legend",
   ...props
@@ -40,8 +31,6 @@ function FieldLegend({
     />
   )
 }
-
-function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-group"
@@ -53,8 +42,6 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
-const fieldVariants = cva(
   "group/field data-[invalid=true]:text-destructive flex w-full gap-3",
   {
     variants: {
@@ -77,8 +64,6 @@ const fieldVariants = cva(
     },
   }
 )
-
-function Field({
   className,
   orientation = "vertical",
   ...props
@@ -93,8 +78,6 @@ function Field({
     />
   )
 }
-
-function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-content"
@@ -106,8 +89,6 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
-function FieldLabel({
   className,
   ...props
 }: React.ComponentProps<typeof Label>) {
@@ -124,8 +105,6 @@ function FieldLabel({
     />
   )
 }
-
-function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-label"
@@ -137,8 +116,6 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
       data-slot="field-description"
@@ -152,8 +129,6 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
     />
   )
 }
-
-function FieldSeparator({
   children,
   className,
   ...props
@@ -182,8 +157,6 @@ function FieldSeparator({
     </div>
   )
 }
-
-function FieldError({
   className,
   children,
   errors,
@@ -195,16 +168,10 @@ function FieldError({
     if (children) {
       return children
     }
-
-    if (!errors) {
       return null
     }
-
-    if (errors?.length === 1 && errors[0]?.message) {
       return errors[0].message
     }
-
-    return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
         {errors.map(
           (error, index) =>
@@ -213,12 +180,8 @@ function FieldError({
       </ul>
     )
   }, [children, errors])
-
-  if (!content) {
     return null
   }
-
-  return (
     <div
       role="alert"
       data-slot="field-error"
@@ -229,8 +192,6 @@ function FieldError({
     </div>
   )
 }
-
-export {
   Field,
   FieldLabel,
   FieldDescription,

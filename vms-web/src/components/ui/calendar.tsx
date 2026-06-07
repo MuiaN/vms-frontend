@@ -1,17 +1,10 @@
-"use client"
-
-import * as React from "react"
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react"
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
-
-import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
-
-function Calendar({
   className,
   classNames,
   showOutsideDays = true,
@@ -24,8 +17,6 @@ function Calendar({
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
 }) {
   const defaultClassNames = getDefaultClassNames()
-
-  return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
@@ -141,8 +132,6 @@ function Calendar({
               <ChevronLeftIcon className={cn("size-4", className)} {...props} />
             )
           }
-
-          if (orientation === "right") {
             return (
               <ChevronRightIcon
                 className={cn("size-4", className)}
@@ -150,8 +139,6 @@ function Calendar({
               />
             )
           }
-
-          return (
             <ChevronDownIcon className={cn("size-4", className)} {...props} />
           )
         },
@@ -171,21 +158,15 @@ function Calendar({
     />
   )
 }
-
-function CalendarDayButton({
   className,
   day,
   modifiers,
   ...props
 }: React.ComponentProps<typeof DayButton>) {
   const defaultClassNames = getDefaultClassNames()
-
-  const ref = React.useRef<HTMLButtonElement>(null)
   React.useEffect(() => {
     if (modifiers.focused) ref.current?.focus()
   }, [modifiers.focused])
-
-  return (
     <Button
       ref={ref}
       variant="ghost"
@@ -209,5 +190,3 @@ function CalendarDayButton({
     />
   )
 }
-
-export { Calendar, CalendarDayButton }
