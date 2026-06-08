@@ -126,18 +126,42 @@ export default function Login() {
               </form>
             </Form>
 
+            <div className="mt-4 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">
+                Built by <span className="text-primary font-semibold">George Muia</span> for <span className="text-foreground">Stone Africa</span>
+              </p>
+            </div>
+
             <div className="mt-8 pt-6 border-t border-border/50">
               <h3 className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-4">Test Protocols</h3>
               <div className="space-y-2 text-sm font-mono">
-                <div className="flex justify-between items-center p-2 rounded bg-muted/30 border border-border/30">
+                <div 
+                  className="flex justify-between items-center p-2 rounded bg-muted/30 border border-border/30 cursor-pointer hover:bg-muted/50 transition-colors group"
+                  onClick={() => {
+                    form.setValue('email', 'manufacturer@test.com');
+                    form.setValue('password', 'password');
+                  }}
+                >
                   <span className="text-primary">manufacturer@test.com</span>
                   <span className="text-muted-foreground">password</span>
                 </div>
-                <div className="flex justify-between items-center p-2 rounded bg-muted/30 border border-border/30">
+                <div 
+                  className="flex justify-between items-center p-2 rounded bg-muted/30 border border-border/30 cursor-pointer hover:bg-muted/50 transition-colors group"
+                  onClick={() => {
+                    form.setValue('email', 'distributor1@test.com');
+                    form.setValue('password', 'password');
+                  }}
+                >
                   <span className="text-foreground">distributor1@test.com</span>
                   <span className="text-muted-foreground">password</span>
                 </div>
-                <div className="flex justify-between items-center p-2 rounded bg-muted/30 border border-border/30">
+                <div 
+                  className="flex justify-between items-center p-2 rounded bg-muted/30 border border-border/30 cursor-pointer hover:bg-muted/50 transition-colors group"
+                  onClick={() => {
+                    form.setValue('email', 'distributor2@test.com');
+                    form.setValue('password', 'password');
+                  }}
+                >
                   <span className="text-foreground">distributor2@test.com</span>
                   <span className="text-muted-foreground">password</span>
                 </div>
