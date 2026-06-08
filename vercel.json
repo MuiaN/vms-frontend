@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm --filter @workspace/vms-web run build",
-  "outputDirectory": "vms-web/dist",
+  "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }

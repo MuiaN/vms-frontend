@@ -15,8 +15,9 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom"],
   },
+  root: path.resolve(import.meta.dirname),
   build: {
-    outDir: "dist",
+    outDir: "../dist",
     emptyOutDir: true,
     rollupOptions: {
       onwarn(warning, warn) {
