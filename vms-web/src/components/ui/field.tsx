@@ -1,6 +1,11 @@
+import * as React from "react"
+import { useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+
+function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
     <fieldset
       data-slot="field-set"
@@ -13,6 +18,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldLegend({
   className,
   variant = "legend",
   ...props
@@ -31,6 +38,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-group"
@@ -42,6 +51,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+const fieldVariants = cva(
   "group/field data-[invalid=true]:text-destructive flex w-full gap-3",
   {
     variants: {
@@ -64,6 +75,8 @@ import { Separator } from "@/components/ui/separator"
     },
   }
 )
+
+function Field({
   className,
   orientation = "vertical",
   ...props
@@ -78,6 +91,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-content"
@@ -89,6 +104,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldLabel({
   className,
   ...props
 }: React.ComponentProps<typeof Label>) {
@@ -105,6 +122,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-label"
@@ -116,6 +135,11 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldDescription({
+  className,
+  ...props
+}: React.ComponentProps<"p">) {
   return (
     <p
       data-slot="field-description"
@@ -129,6 +153,8 @@ import { Separator } from "@/components/ui/separator"
     />
   )
 }
+
+function FieldSeparator({
   children,
   className,
   ...props
@@ -157,6 +183,8 @@ import { Separator } from "@/components/ui/separator"
     </div>
   )
 }
+
+function FieldError({
   className,
   children,
   errors,
@@ -168,10 +196,13 @@ import { Separator } from "@/components/ui/separator"
     if (children) {
       return children
     }
+    if (!errors || errors.length === 0) {
       return null
     }
+    if (errors[0]?.message && errors.length === 1) {
       return errors[0].message
     }
+    return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
         {errors.map(
           (error, index) =>
@@ -180,8 +211,12 @@ import { Separator } from "@/components/ui/separator"
       </ul>
     )
   }, [children, errors])
+
+  if (!content) {
     return null
   }
+
+  return (
     <div
       role="alert"
       data-slot="field-error"
@@ -192,6 +227,8 @@ import { Separator } from "@/components/ui/separator"
     </div>
   )
 }
+
+export {
   Field,
   FieldLabel,
   FieldDescription,
